@@ -1,27 +1,21 @@
-// ===============================
+// =========================
 // LOADING SCREEN
-// ===============================
-
+// =========================
 window.addEventListener("load", function () {
 
     const loadingScreen = document.getElementById("loadingScreen");
 
+    loadingScreen.style.opacity = "0";
+
     setTimeout(() => {
-        loadingScreen.style.opacity = "0";
-
-        setTimeout(() => {
-            loadingScreen.style.display = "none";
-        }, 500);
-
-    }, 1000);
+        loadingScreen.style.display = "none";
+    }, 500);
 
 });
 
-
-// ===============================
+// =========================
 // MOBILE MENU
-// ===============================
-
+// =========================
 const menuToggle = document.getElementById("menuToggle");
 const navMenu = document.getElementById("navMenu");
 
@@ -31,41 +25,43 @@ menuToggle.addEventListener("click", () => {
 
 });
 
+// =========================
+// HEADER SHADOW ON SCROLL
+// =========================
+const header = document.getElementById("header");
 
-// ===============================
-// SMOOTH ACTIVE MENU
-// ===============================
+window.addEventListener("scroll", () => {
 
-const navLinks = document.querySelectorAll(".nav-menu a");
+    if (window.scrollY > 50) {
 
-navLinks.forEach(link => {
+        header.style.boxShadow = "0 5px 20px rgba(0,0,0,0.1)";
+        header.style.background = "rgba(255,255,255,0.95)";
 
-    link.addEventListener("click", () => {
+    } else {
 
-        navMenu.classList.remove("active");
+        header.style.boxShadow = "none";
+        header.style.background = "rgba(255,255,255,0.9)";
 
-    });
+    }
 
 });
 
-
-// ===============================
-// REVEAL ANIMATION
-// ===============================
-
-const reveals = document.querySelectorAll(".reveal");
+// =========================
+// SCROLL REVEAL ANIMATION
+// =========================
+const revealElements = document.querySelectorAll(".reveal");
 
 function revealOnScroll() {
 
     const windowHeight = window.innerHeight;
 
-    reveals.forEach(reveal => {
+    revealElements.forEach((element) => {
 
-        const revealTop = reveal.getBoundingClientRect().top;
+        const elementTop = element.getBoundingClientRect().top;
 
-        if (revealTop < windowHeight - 100) {
+        if (elementTop < windowHeight - 100) {
 
-            reveal.classList.add("active");
+            element.classList.add("active");
 
         }
 
@@ -74,79 +70,39 @@ function revealOnScroll() {
 }
 
 window.addEventListener("scroll", revealOnScroll);
-
 revealOnScroll();
 
-
-// ===============================
-// HEADER SHADOW
-// ===============================
-
-const header = document.getElementById("header");
-
-window.addEventListener("scroll", () => {
-
-    if (window.scrollY > 50) {
-
-        header.style.boxShadow = "0 5px 20px rgba(0,0,0,0.15)";
-        header.style.background = "rgba(255,255,255,0.95)";
-
-    } else {
-
-        header.style.boxShadow = "none";
-        header.style.background = "rgba(255,255,255,0.85)";
-    }
-
-});
-
-
-// ===============================
-// COVERFLOW SLIDER
-// ===============================
-
-const container = document.getElementById("coverflowContainer");
+// =========================
+// COVERFLOW AUTO SLIDE
+// =========================
+const coverflowContainer = document.getElementById("coverflowContainer");
 
 const items = document.querySelectorAll(".coverflow-item");
 
-const indicators = document.querySelectorAll(".indicator");
-
 const prevBtn = document.getElementById("prevBtn");
-
 const nextBtn = document.getElementById("nextBtn");
-
 const playPauseBtn = document.getElementById("playPauseBtn");
 
 let currentIndex = 0;
-
 let autoSlide = true;
 
-let slideInterval;
-
-
-// ===============================
+// =========================
 // UPDATE SLIDER
-// ===============================
-
+// =========================
 function updateSlider() {
 
     const itemWidth = items[0].offsetWidth + 30;
 
-    container.style.transform =
-        `translateX(-${currentIndex * itemWidth}px)`;
-
-    indicators.forEach(indicator => {
-        indicator.classList.remove("active");
+    coverflowContainer.scrollTo({
+        left: currentIndex * itemWidth,
+        behavior: "smooth"
     });
-
-    indicators[currentIndex].classList.add("active");
 
 }
 
-
-// ===============================
+// =========================
 // NEXT SLIDE
-// ===============================
-
+// =========================
 function nextSlide() {
 
     currentIndex++;
@@ -159,11 +115,9 @@ function nextSlide() {
 
 }
 
-
-// ===============================
-// PREVIOUS SLIDE
-// ===============================
-
+// =========================
+// PREV SLIDE
+// =========================
 function prevSlide() {
 
     currentIndex--;
@@ -176,119 +130,51 @@ function prevSlide() {
 
 }
 
-
-// ===============================
+// =========================
 // BUTTON EVENTS
-// ===============================
+// =========================
+nextBtn.addEventListener("click", nextSlide);
 
-nextBtn.addEventListener("click", () => {
+prevBtn.addEventListener("click", prevSlide);
 
-    nextSlide();
-
-});
-
-prevBtn.addEventListener("click", () => {
-
-    prevSlide();
-
-});
-
-
-// ===============================
-// INDICATOR CLICK
-// ===============================
-
-indicators.forEach((indicator, index) => {
-
-    indicator.addEventListener("click", () => {
-
-        currentIndex = index;
-
-        updateSlider();
-
-    });
-
-});
-
-
-// ===============================
+// =========================
 // AUTO PLAY
-// ===============================
+// =========================
+let slideInterval = setInterval(nextSlide, 3000);
 
-function startAutoSlide() {
-
-    slideInterval = setInterval(() => {
-
-        nextSlide();
-
-    }, 3000);
-
-}
-
-function stopAutoSlide() {
-
-    clearInterval(slideInterval);
-
-}
-
-startAutoSlide();
-
-
-// ===============================
+// =========================
 // PLAY / PAUSE BUTTON
-// ===============================
-
+// =========================
 playPauseBtn.addEventListener("click", () => {
-
-    autoSlide = !autoSlide;
 
     if (autoSlide) {
 
-        startAutoSlide();
-
-        playPauseBtn.innerHTML = "❚❚";
-
-    } else {
-
-        stopAutoSlide();
+        clearInterval(slideInterval);
 
         playPauseBtn.innerHTML = "▶";
 
-    }
+        autoSlide = false;
 
-});
+    } else {
 
+        slideInterval = setInterval(nextSlide, 3000);
 
-// ===============================
-// HOVER STOP SLIDER
-// ===============================
+        playPauseBtn.innerHTML = "❚❚";
 
-container.addEventListener("mouseenter", () => {
-
-    stopAutoSlide();
-
-});
-
-container.addEventListener("mouseleave", () => {
-
-    if (autoSlide) {
-
-        startAutoSlide();
+        autoSlide = true;
 
     }
 
 });
 
-
-// ===============================
-// FLOWER CARD HOVER EFFECT
-// ===============================
-
-items.forEach(item => {
+// =========================
+// HOVER EFFECT
+// =========================
+items.forEach((item) => {
 
     item.addEventListener("mouseenter", () => {
 
-        item.style.transform = "translateY(-15px) scale(1.03)";
+        item.style.transform = "translateY(-10px) scale(1.02)";
 
     });
 
@@ -300,88 +186,130 @@ items.forEach(item => {
 
 });
 
+// =========================
+// SMOOTH SCROLL NAVIGATION
+// =========================
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 
-// ===============================
-// SCROLL TOP BUTTON
-// ===============================
+    anchor.addEventListener("click", function (e) {
 
-// membuat tombol otomatis
+        e.preventDefault();
 
-const scrollBtn = document.createElement("button");
+        const target = document.querySelector(this.getAttribute("href"));
 
-scrollBtn.innerHTML = "↑";
+        if (target) {
 
-document.body.appendChild(scrollBtn);
+            target.scrollIntoView({
+                behavior: "smooth"
+            });
 
-scrollBtn.style.position = "fixed";
-scrollBtn.style.bottom = "20px";
-scrollBtn.style.right = "20px";
-scrollBtn.style.width = "50px";
-scrollBtn.style.height = "50px";
-scrollBtn.style.border = "none";
-scrollBtn.style.borderRadius = "50%";
-scrollBtn.style.background = "#ff4f93";
-scrollBtn.style.color = "white";
-scrollBtn.style.fontSize = "22px";
-scrollBtn.style.cursor = "pointer";
-scrollBtn.style.display = "none";
-scrollBtn.style.zIndex = "999";
-scrollBtn.style.boxShadow = "0 5px 15px rgba(0,0,0,0.2)";
+        }
 
-
-// tampil saat scroll
-
-window.addEventListener("scroll", () => {
-
-    if (window.scrollY > 300) {
-
-        scrollBtn.style.display = "block";
-
-    } else {
-
-        scrollBtn.style.display = "none";
-
-    }
-
-});
-
-
-// klik kembali ke atas
-
-scrollBtn.addEventListener("click", () => {
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
     });
 
 });
 
+// =========================
+// ACTIVE MENU ON SCROLL
+// =========================
+const sections = document.querySelectorAll("section");
+const navLinks = document.querySelectorAll(".nav-menu a");
 
-// ===============================
-// TYPING EFFECT HERO TITLE
-// ===============================
+window.addEventListener("scroll", () => {
 
+    let current = "";
+
+    sections.forEach(section => {
+
+        const sectionTop = section.offsetTop - 150;
+
+        if (window.scrollY >= sectionTop) {
+
+            current = section.getAttribute("id");
+
+        }
+
+    });
+
+    navLinks.forEach(link => {
+
+        link.classList.remove("active");
+
+        if (link.getAttribute("href").includes(current)) {
+
+            link.classList.add("active");
+
+        }
+
+    });
+
+});
+
+// =========================
+// CONTACT CARD ANIMATION
+// =========================
+const contactItems = document.querySelectorAll(".contact-item");
+
+contactItems.forEach((card) => {
+
+    card.addEventListener("mouseenter", () => {
+
+        card.style.transform = "translateY(-10px)";
+        card.style.boxShadow = "0 15px 30px rgba(255,79,129,0.2)";
+
+    });
+
+    card.addEventListener("mouseleave", () => {
+
+        card.style.transform = "translateY(0)";
+        card.style.boxShadow = "0 8px 20px rgba(0,0,0,0.08)";
+
+    });
+
+});
+
+// =========================
+// SERVICE CARD EFFECT
+// =========================
+const serviceCards = document.querySelectorAll(".service-card");
+
+serviceCards.forEach((card) => {
+
+    card.addEventListener("mouseenter", () => {
+
+        card.style.transform = "translateY(-10px)";
+        card.style.transition = "0.3s";
+
+    });
+
+    card.addEventListener("mouseleave", () => {
+
+        card.style.transform = "translateY(0)";
+
+    });
+
+});
+
+// =========================
+// HERO TEXT ANIMATION
+// =========================
 const heroTitle = document.querySelector(".hero-title");
 
-const originalText = heroTitle.innerText;
+setTimeout(() => {
 
-heroTitle.innerText = "";
+    heroTitle.style.opacity = "1";
+    heroTitle.style.transform = "translateY(0)";
 
-let letterIndex = 0;
+}, 500);
 
-function typingEffect() {
+// =========================
+// INITIAL STYLE HERO TITLE
+// =========================
+heroTitle.style.opacity = "0";
+heroTitle.style.transform = "translateY(30px)";
+heroTitle.style.transition = "1s";
 
-    if (letterIndex < originalText.length) {
-
-        heroTitle.innerText += originalText.charAt(letterIndex);
-
-        letterIndex++;
-
-        setTimeout(typingEffect, 120);
-
-    }
-
-}
-
-typingEffect();
+// =========================
+// CONSOLE MESSAGE
+// =========================
+console.log("Blooming Bouquet Website Loaded Successfully 🌸");
